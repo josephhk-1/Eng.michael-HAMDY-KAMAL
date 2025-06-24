@@ -41,7 +41,7 @@
     <!-- Conteneur principal de la carte -->
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 m-4">
 
-        <!-- NOUVEAU : Sélecteur de langue -->
+        <!-- Sélecteur de langue -->
         <div class="flex justify-center mb-6">
             <div class="flex border border-gray-300 rounded-lg p-1">
                 <button id="lang-en" class="lang-btn px-4 py-1 rounded-md text-sm transition-all duration-300">English</button>
@@ -71,7 +71,7 @@
                     <span class="ml-2" data-lang="companyProfile">Company Profile</span>
                 </a>
             </div>
-             <!-- NOUVEAU : Bouton pour télécharger la carte -->
+             <!-- Bouton pour télécharger la carte -->
             <button onclick="downloadCard()" class="w-full px-4 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
                 <i class="fas fa-id-card icon"></i>
                 <span class="ml-2" data-lang="downloadCard">Download Card</span>
@@ -100,7 +100,7 @@
     </div>
 
     <script>
-        // NOUVEAU : Dictionnaire des traductions
+        // Dictionnaire des traductions
         const translations = {
             en: {
                 jobTitle: "Interior Designer & Project Manager",
@@ -119,7 +119,7 @@
                 jobTitle: "مصمم داخلي ومدير مشاريع",
                 addContact: "أضف إلى جهات الاتصال",
                 companyProfile: "ملف الشركة",
-                downloadCard: "تحميل الكارت",
+                downloadCard: "تحميل البطاقة",
                 callMe: "اتصل بي",
                 sendEmail: "أرسل بريد إلكتروني",
                 whatsapp: "واتساب",
@@ -147,22 +147,22 @@
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             document.title = translations[lang].cardTitle;
 
-            // Mettre à jour la marge des icônes pour RTL/LTR
-             const icons = document.querySelectorAll('.icon');
-             icons.forEach(icon => {
+            const icons = document.querySelectorAll('.icon');
+            icons.forEach(icon => {
                 const span = icon.nextElementSibling;
                 if (span) {
-                     if (lang === 'ar') {
+                    const marginClass = span.classList.contains('ml-2') ? 'ml-2' : 'ml-4';
+                    const newMarginClass = marginClass.replace('ml', 'mr');
+                    if (lang === 'ar') {
                         span.classList.remove('ml-2', 'ml-4');
-                        span.classList.add('mr-2', 'mr-4');
+                        span.classList.add(newMarginClass);
                     } else {
                         span.classList.remove('mr-2', 'mr-4');
-                        span.classList.add('ml-2', 'ml-4');
+                        span.classList.add(marginClass);
                     }
                 }
             });
 
-            // Mettre à jour le style du bouton actif
             if (lang === 'ar') {
                 langArBtn.classList.add('active');
                 langEnBtn.classList.remove('active');
@@ -175,7 +175,6 @@
         langEnBtn.addEventListener('click', () => setLanguage('en'));
         langArBtn.addEventListener('click', () => setLanguage('ar'));
         
-        // Initialiser la langue par défaut
         document.addEventListener('DOMContentLoaded', () => {
             setLanguage('en'); 
         });
@@ -210,10 +209,28 @@ END:VCARD`;
             document.body.removeChild(link);
         }
         
-        // NOUVEAU : Fonction pour télécharger la carte HTML elle-même
+        // CORRIGÉ : Nouvelle fonction pour télécharger une carte HTML autonome
         function downloadCard() {
-            // Crée une copie du HTML actuel pour éviter de télécharger un fichier vide
-            const htmlContent = document.documentElement.outerHTML;
+            // Clonez le document pour ne pas modifier la page en direct
+            const docClone = document.documentElement.cloneNode(true);
+
+            // Remplacez les chemins relatifs par des URL complètes pour que les images et icônes fonctionnent partout
+            const baseUrl = 'https://josephhk-1.github.io/Eng.michael-HAMDY-KAMAL/';
+
+            const img = docClone.querySelector('img[src="photo.jpg"]');
+            if (img) {
+                img.src = baseUrl + 'photo.jpg';
+            }
+
+            const favicons = docClone.querySelectorAll('link[href="favicon.png"]');
+            favicons.forEach(link => {
+                link.href = baseUrl + 'favicon.png';
+            });
+
+            // Obtenez le contenu HTML final du clone modifié
+            const htmlContent = "<!DOCTYPE html>\n" + docClone.outerHTML;
+
+            // Créez un blob et déclenchez le téléchargement
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
