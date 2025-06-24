@@ -1,22 +1,38 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital card - Eng. Micheal Hamdy</title>
+    <title>Digital Card - Eng. Micheal Hamdy</title>
+    
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png"> <!-- Pour les appareils Apple -->
+    <link rel="apple-touch-icon" href="favicon.png">
+
     <!-- Intégration de Tailwind CSS pour le style -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Intégration de Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Police Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Polices Google Fonts : Inter pour l'anglais, Cairo pour l'arabe -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* Appliquer la police Inter à tout le corps du document */
+        /* Appliquer la police Inter par défaut */
         body {
             font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent; /* Supprime le flash bleu au toucher sur mobile */
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Appliquer la police Cairo lorsque la direction est de droite à gauche (RTL) pour l'arabe */
+        html[dir="rtl"] body {
+            font-family: 'Cairo', sans-serif;
+        }
+        /* Style pour le bouton de langue actif */
+        .lang-btn.active {
+            background-color: #3B82F6; /* blue-500 */
+            color: white;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -25,77 +41,156 @@
     <!-- Conteneur principal de la carte -->
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 m-4">
 
+        <!-- NOUVEAU : Sélecteur de langue -->
+        <div class="flex justify-center mb-6">
+            <div class="flex border border-gray-300 rounded-lg p-1">
+                <button id="lang-en" class="lang-btn px-4 py-1 rounded-md text-sm transition-all duration-300">English</button>
+                <button id="lang-ar" class="lang-btn px-4 py-1 rounded-md text-sm transition-all duration-300">العربية</button>
+            </div>
+        </div>
+
         <!-- Section Photo et Nom -->
         <div class="flex flex-col items-center text-center">
-            <!-- REMPLACEZ-MOI: Changez le `src` pour mettre votre photo (optimisez-la pour le web) -->
             <img class="w-32 h-32 rounded-full mb-4 ring-4 ring-blue-500 ring-offset-4 object-cover" 
                  src="photo.jpg" 
                  alt="Photo de Eng. Micheal Hamdy"
                  onerror="this.onerror=null;this.src='https://placehold.co/200x200/EFEFEF/1D4ED8?text=Photo';">
             <h1 class="text-3xl font-bold text-gray-800 mt-4">Eng. Micheal Hamdy</h1>
-            <!-- REMPLACEZ-MOI: Changez le titre/profession -->
-            <p class="text-gray-500 mt-1 font-medium">Interior Designer & Project Manager</p>
+            <p class="text-gray-500 mt-1 font-medium" data-lang="jobTitle">Interior Designer & Project Manager</p>
         </div>
         
         <!-- Section Boutons d'action principaux -->
-        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Bouton Ajouter aux contacts (VCard) -->
-            <button onclick="downloadVCard()" class="w-full px-6 py-4 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-800 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
-                <i class="fas fa-user-plus mr-2"></i>
-                Add to contacts
+        <div class="mt-8 grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="downloadVCard()" class="w-full px-4 py-3 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-800 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
+                    <i class="fas fa-user-plus icon"></i>
+                    <span class="ml-2" data-lang="addContact">Add to contacts</span>
+                </button>
+                <a href="https://drive.google.com/file/d/1Uy0nAw024lmktAaQWHOS0MX5uP-RO_4q/view?usp=sharing" target="_blank" class="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center text-center">
+                    <i class="fas fa-download icon"></i>
+                    <span class="ml-2" data-lang="companyProfile">Company Profile</span>
+                </a>
+            </div>
+             <!-- NOUVEAU : Bouton pour télécharger la carte -->
+            <button onclick="downloadCard()" class="w-full px-4 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
+                <i class="fas fa-id-card icon"></i>
+                <span class="ml-2" data-lang="downloadCard">Download Card</span>
             </button>
-            <!-- Bouton Profil de l'entreprise -->
-             <!-- REMPLACEZ-MOI: Changez le lien vers votre fichier PDF -->
-            <a href="https://drive.google.com/file/d/1Uy0nAw024lmktAaQWHOS0MX5uP-RO_4q/view?usp=sharing" download="Company Profile.pdf" class="w-full px-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center text-center">
-                <i class="fas fa-download mr-2"></i>
-                Company Profile
-            </a>
         </div>
-
 
         <!-- Section Liens de Contact détaillés -->
         <div class="mt-8 space-y-4">
-            <!-- Téléphone -->
-            <!-- REMPLACEZ-MOI: Changez le numéro de téléphone dans href="tel:..." -->
             <a href="tel:+966556988973" class="flex items-center p-4 bg-gray-100 hover:bg-blue-100 rounded-xl transition-all duration-300 transform hover:scale-105">
-                <i class="fas fa-phone fa-lg text-blue-600 w-6 text-center"></i>
-                <span class="ml-4 text-gray-700 font-semibold">Call me</span>
+                <i class="fas fa-phone fa-lg text-blue-600 w-6 text-center icon"></i>
+                <span class="ml-4" data-lang="callMe">Call me</span>
             </a>
-            <!-- Email -->
-            <!-- REMPLACEZ-MOI: Changez l'adresse email dans href="mailto:..." -->
-            <a href="mailto: engmichaelh@gmail.com" class="flex items-center p-4 bg-gray-100 hover:bg-blue-100 rounded-xl transition-all duration-300 transform hover:scale-105">
-                <i class="fas fa-envelope fa-lg text-blue-600 w-6 text-center"></i>
-                <span class="ml-4 text-gray-700 font-semibold">Send me an email</span>
+            <a href="mailto:engmichaelh@gmail.com" class="flex items-center p-4 bg-gray-100 hover:bg-blue-100 rounded-xl transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-envelope fa-lg text-blue-600 w-6 text-center icon"></i>
+                <span class="ml-4" data-lang="sendEmail">Send me an email</span>
             </a>
-            <!-- WhatsApp -->
-            <!-- REMPLACEZ-MOI: Changez le numéro WhatsApp dans href="..." (inclure le code pays) -->
             <a href="https://wa.me/966556988973" target="_blank" class="flex items-center p-4 bg-gray-100 hover:bg-green-100 rounded-xl transition-all duration-300 transform hover:scale-105">
-                <i class="fab fa-whatsapp fa-lg text-green-500 w-6 text-center"></i>
-                <span class="ml-4 text-gray-700 font-semibold">WhatsApp</span>
+                <i class="fab fa-whatsapp fa-lg text-green-500 w-6 text-center icon"></i>
+                <span class="ml-4" data-lang="whatsapp">WhatsApp</span>
             </a>
-            <!-- Instagram -->
-            <!-- REMPLACEZ-MOI: Changez le nom d'utilisateur Instagram dans href="..." -->
             <a href="https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr" target="_blank" class="flex items-center p-4 bg-gray-100 hover:bg-pink-100 rounded-xl transition-all duration-300 transform hover:scale-105">
-                <i class="fab fa-instagram fa-lg text-pink-500 w-6 text-center"></i>
-                <span class="ml-4 text-gray-700 font-semibold">Instagram</span>
+                <i class="fab fa-instagram fa-lg text-pink-500 w-6 text-center icon"></i>
+                <span class="ml-4" data-lang="instagram">Instagram</span>
             </a>
         </div>
     </div>
 
     <script>
-        // Fonction pour générer et télécharger le fichier VCard
+        // NOUVEAU : Dictionnaire des traductions
+        const translations = {
+            en: {
+                jobTitle: "Interior Designer & Project Manager",
+                addContact: "Add to contacts",
+                companyProfile: "Company Profile",
+                downloadCard: "Download Card",
+                callMe: "Call me",
+                sendEmail: "Send me an email",
+                whatsapp: "WhatsApp",
+                instagram: "Instagram",
+                cardTitle: "Digital Card - Eng. Micheal Hamdy",
+                vCardFileName: "Eng_Micheal_Hamdy.vcf",
+                htmlCardFileName: "Digital_Card_Eng_Micheal_Hamdy.html"
+            },
+            ar: {
+                jobTitle: "مصمم داخلي ومدير مشاريع",
+                addContact: "أضف إلى جهات الاتصال",
+                companyProfile: "ملف الشركة",
+                downloadCard: "تحميل الكارت",
+                callMe: "اتصل بي",
+                sendEmail: "أرسل بريد إلكتروني",
+                whatsapp: "واتساب",
+                instagram: "انستغرام",
+                cardTitle: "بطاقة رقمية - م. مايكل حمدي",
+                vCardFileName: "م_مايكل_حمدي.vcf",
+                htmlCardFileName: "بطاقة_رقمية_م_مايكل_حمدي.html"
+            }
+        };
+
+        const langEnBtn = document.getElementById('lang-en');
+        const langArBtn = document.getElementById('lang-ar');
+        let currentLang = 'en';
+
+        // Fonction pour changer la langue
+        function setLanguage(lang) {
+            currentLang = lang;
+            const elements = document.querySelectorAll('[data-lang]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-lang');
+                el.textContent = translations[lang][key];
+            });
+
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.title = translations[lang].cardTitle;
+
+            // Mettre à jour la marge des icônes pour RTL/LTR
+             const icons = document.querySelectorAll('.icon');
+             icons.forEach(icon => {
+                const span = icon.nextElementSibling;
+                if (span) {
+                     if (lang === 'ar') {
+                        span.classList.remove('ml-2', 'ml-4');
+                        span.classList.add('mr-2', 'mr-4');
+                    } else {
+                        span.classList.remove('mr-2', 'mr-4');
+                        span.classList.add('ml-2', 'ml-4');
+                    }
+                }
+            });
+
+            // Mettre à jour le style du bouton actif
+            if (lang === 'ar') {
+                langArBtn.classList.add('active');
+                langEnBtn.classList.remove('active');
+            } else {
+                langEnBtn.classList.add('active');
+                langArBtn.classList.remove('active');
+            }
+        }
+
+        langEnBtn.addEventListener('click', () => setLanguage('en'));
+        langArBtn.addEventListener('click', () => setLanguage('ar'));
+        
+        // Initialiser la langue par défaut
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('en'); 
+        });
+
+        // Fonction pour télécharger le fichier VCard
         function downloadVCard() {
-            // REMPLACEZ-MOI: Personnalisez les informations de contact ici
             const contact = {
                 firstName: 'Micheal',
                 lastName: 'Hamdy',
                 title: 'Interior Designer & Project Manager',
                 phone: '+966556988973',
                 email: 'engmichaelh@gmail.com',
-                instagram: 'https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr' // juste le nom d'utilisateur
+                instagramUrl: 'https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr'
             };
 
-            // Création du contenu du fichier VCard
             const vCard = `BEGIN:VCARD
 VERSION:3.0
 N:${contact.lastName};${contact.firstName};;;
@@ -103,18 +198,26 @@ FN:${contact.firstName} ${contact.lastName}
 TITLE:${contact.title}
 TEL;TYPE=CELL:${contact.phone}
 EMAIL:${contact.email}
-URL;type=pref:https://instagram.com/${contact.instagram}
+URL:${contact.instagramUrl}
 END:VCARD`;
 
-            // Création d'un Blob (fichier en mémoire)
             const blob = new Blob([vCard], { type: 'text/vcard;charset=utf-8' });
-            
-            // Création d'un lien de téléchargement
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `${contact.firstName}_${contact.lastName}.vcf`;
-            
-            // Simulation du clic pour démarrer le téléchargement
+            link.download = translations[currentLang].vCardFileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // NOUVEAU : Fonction pour télécharger la carte HTML elle-même
+        function downloadCard() {
+            // Crée une copie du HTML actuel pour éviter de télécharger un fichier vide
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = translations[currentLang].htmlCardFileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
