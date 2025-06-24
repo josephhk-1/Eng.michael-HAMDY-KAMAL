@@ -19,81 +19,98 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Appliquer la police Inter par défaut */
         body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            /* CORRIGÉ: L'arrière-plan de la page est maintenant un gris très foncé */
+            background-color: #111827; /* bg-gray-900 */
         }
-        /* Appliquer la police Cairo lorsque la direction est de droite à gauche (RTL) pour l'arabe */
         html[dir="rtl"] body {
             font-family: 'Cairo', sans-serif;
         }
-        /* Style pour le bouton de langue actif */
         .lang-btn.active {
             background-color: #3B82F6; /* blue-500 */
             color: white;
             font-weight: bold;
         }
+        #card-background-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Placé derrière le contenu de la carte */
+        }
     </style>
 </head>
-<body class="bg-gray-200 flex items-center justify-center min-h-screen">
+<body class="flex items-center justify-center min-h-screen">
 
     <!-- Conteneur principal de la carte -->
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 m-4">
-
-        <!-- Sélecteur de langue -->
-        <div class="flex justify-center mb-6">
-            <div class="flex border border-gray-300 rounded-lg p-1">
-                <button id="lang-en" class="lang-btn px-4 py-1 rounded-md text-sm transition-all duration-300">English</button>
-                <button id="lang-ar" class="lang-btn px-4 py-1 rounded-md text-sm transition-all duration-300">العربية</button>
-            </div>
-        </div>
-
-        <!-- Section Photo et Nom -->
-        <div class="flex flex-col items-center text-center">
-            <img class="w-32 h-32 rounded-full mb-4 ring-4 ring-blue-500 ring-offset-4 object-cover" 
-                 src="photo.jpg" 
-                 alt="Photo de Eng. Micheal Hamdy"
-                 onerror="this.onerror=null;this.src='https://placehold.co/200x200/EFEFEF/1D4ED8?text=Photo';">
-            <h1 class="text-3xl font-bold text-gray-800 mt-4">Eng. Micheal Hamdy</h1>
-            <p class="text-gray-500 mt-1 font-medium" data-lang="jobTitle">Interior Designer & Project Manager</p>
-        </div>
+    <div class="relative w-full max-w-md bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl p-6 sm:p-8 m-4 overflow-hidden" id="card-container">
         
-        <!-- Section Boutons d'action principaux -->
-        <div class="mt-8 grid grid-cols-2 gap-4">
-            <button onclick="downloadVCard()" class="w-full px-4 py-3 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-800 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
-                <i class="fas fa-user-plus icon"></i>
-                <span class="ml-2" data-lang="addContact">Add to contacts</span>
-            </button>
-            <a href="https://drive.google.com/file/d/1Uy0nAw024lmktAaQWHOS0MX5uP-RO_4q/view?usp=sharing" target="_blank" class="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center text-center">
-                <i class="fas fa-download icon"></i>
-                <span class="ml-2" data-lang="companyProfile">Company Profile</span>
-            </a>
-        </div>
+        <!-- Canevas pour l'animation interne -->
+        <canvas id="card-background-canvas"></canvas>
 
-        <!-- Section Liens de Contact détaillés -->
-        <div class="mt-8 space-y-4">
-            <a href="tel:+966556988973" class="flex items-center p-4 bg-gray-100 hover:bg-blue-100 rounded-xl transition-all duration-300 transform hover:scale-105">
-                <i class="fas fa-phone fa-lg text-blue-600 w-6 text-center icon"></i>
-                <span class="ml-4" data-lang="callMe">Call me</span>
-            </a>
-            <a href="mailto:engmichaelh@gmail.com" class="flex items-center p-4 bg-gray-100 hover:bg-blue-100 rounded-xl transition-all duration-300 transform hover:scale-105">
-                <i class="fas fa-envelope fa-lg text-blue-600 w-6 text-center icon"></i>
-                <span class="ml-4" data-lang="sendEmail">Send me an email</span>
-            </a>
-            <a href="https://wa.me/966556988973" target="_blank" class="flex items-center p-4 bg-gray-100 hover:bg-green-100 rounded-xl transition-all duration-300 transform hover:scale-105">
-                <i class="fab fa-whatsapp fa-lg text-green-500 w-6 text-center icon"></i>
-                <span class="ml-4" data-lang="whatsapp">WhatsApp</span>
-            </a>
-            <a href="https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr" target="_blank" class="flex items-center p-4 bg-gray-100 hover:bg-pink-100 rounded-xl transition-all duration-300 transform hover:scale-105">
-                <i class="fab fa-instagram fa-lg text-pink-500 w-6 text-center icon"></i>
-                <span class="ml-4" data-lang="instagram">Instagram</span>
-            </a>
-        </div>
+        <!-- Conteneur pour le contenu de la carte (pour le mettre au-dessus de l'animation) -->
+        <div class="relative z-10">
+
+            <!-- Sélecteur de langue -->
+            <div class="flex justify-center mb-6">
+                <div class="flex border border-gray-300 rounded-lg p-1 bg-white/50">
+                    <button id="lang-en" class="lang-btn px-4 py-1 rounded-md text-sm transition-all duration-300">English</button>
+                    <button id="lang-ar" class="lang-btn px-4 py-1 rounded-md text-sm transition-all duration-300">العربية</button>
+                </div>
+            </div>
+
+            <!-- Section Photo et Nom -->
+            <div class="flex flex-col items-center text-center">
+                <img class="w-32 h-32 rounded-full mb-4 ring-4 ring-blue-500 ring-offset-4 object-cover" 
+                     src="photo.jpg" 
+                     alt="Photo de Eng. Micheal Hamdy"
+                     onerror="this.onerror=null;this.src='https://placehold.co/200x200/EFEFEF/1D4ED8?text=Photo';">
+                <h1 class="text-3xl font-bold text-gray-800 mt-4">Eng. Micheal Hamdy</h1>
+                <p class="text-gray-600 mt-1 font-medium" data-lang="jobTitle">Interior Designer & Project Manager</p>
+            </div>
+            
+            <!-- Section Boutons d'action principaux -->
+            <div class="mt-8 grid grid-cols-2 gap-4">
+                <button onclick="downloadVCard()" class="w-full px-4 py-3 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-800 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
+                    <i class="fas fa-user-plus icon"></i>
+                    <span class="ml-2" data-lang="addContact">Add to contacts</span>
+                </button>
+                <a href="https://drive.google.com/file/d/1Uy0nAw024lmktAaQWHOS0MX5uP-RO_4q/view?usp=sharing" target="_blank" class="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center text-center">
+                    <i class="fas fa-download icon"></i>
+                    <span class="ml-2" data-lang="companyProfile">Company Profile</span>
+                </a>
+            </div>
+
+            <!-- Section Liens de Contact détaillés -->
+            <div class="mt-8 space-y-4">
+                <!-- CORRIGÉ: Icône en vert -->
+                <a href="tel:+966556988973" class="flex items-center p-4 bg-white/80 hover:bg-green-50 rounded-xl transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-phone fa-lg text-green-600 w-6 text-center icon"></i>
+                    <span class="ml-4 text-gray-700 font-semibold" data-lang="callMe">Call me</span>
+                </a>
+                <!-- CORRIGÉ: Icône en vert -->
+                <a href="mailto:engmichaelh@gmail.com" class="flex items-center p-4 bg-white/80 hover:bg-green-50 rounded-xl transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-envelope fa-lg text-green-600 w-6 text-center icon"></i>
+                    <span class="ml-4 text-gray-700 font-semibold" data-lang="sendEmail">Send me an email</span>
+                </a>
+                <a href="https://wa.me/966556988973" target="_blank" class="flex items-center p-4 bg-white/80 hover:bg-green-50 rounded-xl transition-all duration-300 transform hover:scale-105">
+                    <i class="fab fa-whatsapp fa-lg text-green-500 w-6 text-center icon"></i>
+                    <span class="ml-4 text-gray-700 font-semibold" data-lang="whatsapp">WhatsApp</span>
+                </a>
+                <a href="https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr" target="_blank" class="flex items-center p-4 bg-white/80 hover:bg-pink-50 rounded-xl transition-all duration-300 transform hover:scale-105">
+                    <i class="fab fa-instagram fa-lg text-pink-500 w-6 text-center icon"></i>
+                    <span class="ml-4 text-gray-700 font-semibold" data-lang="instagram">Instagram</span>
+                </a>
+            </div>
+
+        </div> <!-- Fin du conteneur de contenu -->
     </div>
 
     <script>
-        // Dictionnaire des traductions
+        // --- LOGIQUE DE LA CARTE ---
         const translations = {
             en: { jobTitle: "Interior Designer & Project Manager", addContact: "Add to contacts", companyProfile: "Company Profile", callMe: "Call me", sendEmail: "Send me an email", whatsapp: "WhatsApp", instagram: "Instagram", cardTitle: "Digital Card - Eng. Micheal Hamdy", vCardFileName: "Eng_Micheal_Hamdy.vcf" },
             ar: { jobTitle: "مصمم داخلي ومدير مشاريع", addContact: "أضف إلى جهات الاتصال", companyProfile: "ملف الشركة", callMe: "اتصل بي", sendEmail: "أرسل بريد إلكتروني", whatsapp: "واتساب", instagram: "انستغرام", cardTitle: "بطاقة رقمية - م. مايكل حمدي", vCardFileName: "م_مايكل_حمدي.vcf" }
@@ -103,7 +120,6 @@
         const langArBtn = document.getElementById('lang-ar');
         let currentLang = 'en';
 
-        // Fonction pour changer la langue
         function setLanguage(lang) {
             currentLang = lang;
             document.querySelectorAll('[data-lang]').forEach(el => el.textContent = translations[lang][el.dataset.lang]);
@@ -130,7 +146,6 @@
         langArBtn.addEventListener('click', () => setLanguage('ar'));
         document.addEventListener('DOMContentLoaded', () => setLanguage('en'));
 
-        // Fonction pour télécharger le fichier VCard
         function downloadVCard() {
             const contact = { firstName: 'Micheal', lastName: 'Hamdy', title: 'Interior Designer & Project Manager', phone: '+966556988973', email: 'engmichaelh@gmail.com', instagramUrl: 'https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr' };
             const vCard = `BEGIN:VCARD\nVERSION:3.0\nN:${contact.lastName};${contact.firstName};;;\nFN:${contact.firstName} ${contact.lastName}\nTITLE:${contact.title}\nTEL;TYPE=CELL:${contact.phone}\nEMAIL:${contact.email}\nURL:${contact.instagramUrl}\nEND:VCARD`;
@@ -142,6 +157,89 @@
             link.click();
             document.body.removeChild(link);
         }
+
+        // --- LOGIQUE DE L'ANIMATION INTERNE À LA CARTE ---
+        const cardContainer = document.getElementById('card-container');
+        const canvas = document.getElementById('card-background-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray;
+
+        function setCanvasSize() {
+            canvas.width = cardContainer.offsetWidth;
+            canvas.height = cardContainer.offsetHeight;
+        }
+        setCanvasSize();
+
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x; this.y = y; this.directionX = directionX; this.directionY = directionY; this.size = size; this.color = color;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) { this.directionX = -this.directionX; }
+                if (this.y > canvas.height || this.y < 0) { this.directionY = -this.directionY; }
+                this.x += this.directionX; this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 10000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 2) + 1;
+                let x = (Math.random() * ((canvas.width - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((canvas.height - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * 0.4) - 0.2;
+                let directionY = (Math.random() * 0.4) - 0.2;
+                let color = 'rgba(0, 0, 0, 0.15)'; // Couleur plus sombre pour contraster sur le fond blanc
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        function connectParticles() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
+                    if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                        opacityValue = 1 - (distance / 15000);
+                        ctx.strokeStyle = `rgba(0, 0, 0, ${opacityValue * 0.15})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            requestAnimationFrame(animateParticles);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connectParticles();
+        }
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                setCanvasSize();
+                initParticles();
+            }, 250);
+        });
+
+        initParticles();
+        animateParticles();
     </script>
 </body>
 </html>
