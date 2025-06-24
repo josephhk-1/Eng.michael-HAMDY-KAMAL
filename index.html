@@ -78,6 +78,9 @@
             </button>
         </div>
 
+        <!-- NOUVEAU: Zone de message pour le statut du téléchargement -->
+        <div id="status-message" class="text-center text-sm text-gray-500 mt-4 h-5"></div>
+
         <!-- Section Liens de Contact détaillés -->
         <div class="mt-8 space-y-4">
             <a href="tel:+966556988973" class="flex items-center p-4 bg-gray-100 hover:bg-blue-100 rounded-xl transition-all duration-300 transform hover:scale-105">
@@ -102,32 +105,8 @@
     <script>
         // Dictionnaire des traductions
         const translations = {
-            en: {
-                jobTitle: "Interior Designer & Project Manager",
-                addContact: "Add to contacts",
-                companyProfile: "Company Profile",
-                downloadCard: "Download Card",
-                callMe: "Call me",
-                sendEmail: "Send me an email",
-                whatsapp: "WhatsApp",
-                instagram: "Instagram",
-                cardTitle: "Digital Card - Eng. Micheal Hamdy",
-                vCardFileName: "Eng_Micheal_Hamdy.vcf",
-                htmlCardFileName: "Digital_Card_Eng_Micheal_Hamdy.html"
-            },
-            ar: {
-                jobTitle: "مصمم داخلي ومدير مشاريع",
-                addContact: "أضف إلى جهات الاتصال",
-                companyProfile: "ملف الشركة",
-                downloadCard: "تحميل البطاقة",
-                callMe: "اتصل بي",
-                sendEmail: "أرسل بريد إلكتروني",
-                whatsapp: "واتساب",
-                instagram: "انستغرام",
-                cardTitle: "بطاقة رقمية - م. مايكل حمدي",
-                vCardFileName: "م_مايكل_حمدي.vcf",
-                htmlCardFileName: "بطاقة_رقمية_م_مايكل_حمدي.html"
-            }
+            en: { jobTitle: "Interior Designer & Project Manager", addContact: "Add to contacts", companyProfile: "Company Profile", downloadCard: "Download Card", callMe: "Call me", sendEmail: "Send me an email", whatsapp: "WhatsApp", instagram: "Instagram", cardTitle: "Digital Card - Eng. Micheal Hamdy", vCardFileName: "Eng_Micheal_Hamdy.vcf", htmlCardFileName: "Digital_Card_Eng_Micheal_Hamdy.html", statusPreparing: "Preparing download...", statusConvertingPhoto: "Converting photo (1/2)...", statusConvertingIcon: "Converting icon (2/2)...", statusCreatingFile: "Creating file...", statusSuccess: "Download started!", errorPrefix: "Error: ", errorPhoto: "Could not load photo.", errorIcon: "Could not load icon." },
+            ar: { jobTitle: "مصمم داخلي ومدير مشاريع", addContact: "أضف إلى جهات الاتصال", companyProfile: "ملف الشركة", downloadCard: "تحميل البطاقة", callMe: "اتصل بي", sendEmail: "أرسل بريد إلكتروني", whatsapp: "واتساب", instagram: "انستغرام", cardTitle: "بطاقة رقمية - م. مايكل حمدي", vCardFileName: "م_مايكل_حمدي.vcf", htmlCardFileName: "بطاقة_رقمية_م_مايكل_حمدي.html", statusPreparing: "جاري تحضير التنزيل...", statusConvertingPhoto: "جاري تحويل الصورة (1/2)...", statusConvertingIcon: "جاري تحويل الأيقونة (2/2)...", statusCreatingFile: "جاري إنشاء الملف...", statusSuccess: "بدأ التنزيل!", errorPrefix: "خطأ: ", errorPhoto: "ไม่สามารถ تحميل الصورة.", errorIcon: "ไม่สามารถ تحميل الأيقونة." }
         };
 
         const langEnBtn = document.getElementById('lang-en');
@@ -137,69 +116,34 @@
         // Fonction pour changer la langue
         function setLanguage(lang) {
             currentLang = lang;
-            const elements = document.querySelectorAll('[data-lang]');
-            elements.forEach(el => {
-                const key = el.getAttribute('data-lang');
-                el.textContent = translations[lang][key];
-            });
-
+            document.querySelectorAll('[data-lang]').forEach(el => el.textContent = translations[lang][el.dataset.lang]);
             document.documentElement.lang = lang;
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             document.title = translations[lang].cardTitle;
-
-            const icons = document.querySelectorAll('.icon');
-            icons.forEach(icon => {
+            document.querySelectorAll('.icon').forEach(icon => {
                 const span = icon.nextElementSibling;
-                if (span) {
-                    const marginClass = span.classList.contains('ml-2') ? 'ml-2' : 'ml-4';
-                    const newMarginClass = marginClass.replace('ml', 'mr');
+                if(span) {
                     if (lang === 'ar') {
-                        span.classList.remove('ml-2', 'ml-4');
-                        span.classList.add(newMarginClass);
+                        if (span.classList.contains('ml-2')) { span.classList.remove('ml-2'); span.classList.add('mr-2'); }
+                        if (span.classList.contains('ml-4')) { span.classList.remove('ml-4'); span.classList.add('mr-4'); }
                     } else {
-                        span.classList.remove('mr-2', 'mr-4');
-                        span.classList.add(marginClass);
+                        if (span.classList.contains('mr-2')) { span.classList.remove('mr-2'); span.classList.add('ml-2'); }
+                        if (span.classList.contains('mr-4')) { span.classList.remove('mr-4'); span.classList.add('ml-4'); }
                     }
                 }
             });
-
-            if (lang === 'ar') {
-                langArBtn.classList.add('active');
-                langEnBtn.classList.remove('active');
-            } else {
-                langEnBtn.classList.add('active');
-                langArBtn.classList.remove('active');
-            }
+            if (lang === 'ar') { langArBtn.classList.add('active'); langEnBtn.classList.remove('active'); } 
+            else { langEnBtn.classList.add('active'); langArBtn.classList.remove('active'); }
         }
 
         langEnBtn.addEventListener('click', () => setLanguage('en'));
         langArBtn.addEventListener('click', () => setLanguage('ar'));
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            setLanguage('en'); 
-        });
+        document.addEventListener('DOMContentLoaded', () => setLanguage('en'));
 
         // Fonction pour télécharger le fichier VCard
         function downloadVCard() {
-            const contact = {
-                firstName: 'Micheal',
-                lastName: 'Hamdy',
-                title: 'Interior Designer & Project Manager',
-                phone: '+966556988973',
-                email: 'engmichaelh@gmail.com',
-                instagramUrl: 'https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr'
-            };
-
-            const vCard = `BEGIN:VCARD
-VERSION:3.0
-N:${contact.lastName};${contact.firstName};;;
-FN:${contact.firstName} ${contact.lastName}
-TITLE:${contact.title}
-TEL;TYPE=CELL:${contact.phone}
-EMAIL:${contact.email}
-URL:${contact.instagramUrl}
-END:VCARD`;
-
+            const contact = { firstName: 'Micheal', lastName: 'Hamdy', title: 'Interior Designer & Project Manager', phone: '+966556988973', email: 'engmichaelh@gmail.com', instagramUrl: 'https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr' };
+            const vCard = `BEGIN:VCARD\nVERSION:3.0\nN:${contact.lastName};${contact.firstName};;;\nFN:${contact.firstName} ${contact.lastName}\nTITLE:${contact.title}\nTEL;TYPE=CELL:${contact.phone}\nEMAIL:${contact.email}\nURL:${contact.instagramUrl}\nEND:VCARD`;
             const blob = new Blob([vCard], { type: 'text/vcard;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -209,35 +153,59 @@ END:VCARD`;
             document.body.removeChild(link);
         }
         
-        // CORRIGÉ : Nouvelle fonction pour télécharger une carte HTML autonome
-        function downloadCard() {
-            // Clonez le document pour ne pas modifier la page en direct
-            const docClone = document.documentElement.cloneNode(true);
+        // CORRIGÉ : Nouvelle fonction qui intègre les images pour un téléchargement 100% autonome
+        async function downloadCard() {
+            const statusEl = document.getElementById('status-message');
+            statusEl.textContent = translations[currentLang].statusPreparing;
 
-            // Remplacez les chemins relatifs par des URL complètes pour que les images et icônes fonctionnent partout
-            const baseUrl = 'https://josephhk-1.github.io/Eng.michael-HAMDY-KAMAL/';
+            const imageToDataUrl = async (url) => {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Network response was not ok for ${url}`);
+                const blob = await response.blob();
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            };
 
-            const img = docClone.querySelector('img[src="photo.jpg"]');
-            if (img) {
-                img.src = baseUrl + 'photo.jpg';
+            try {
+                // Utiliser les URL complètes pour plus de fiabilité
+                const baseUrl = 'https://josephhk-1.github.io/Eng.michael-HAMDY-KAMAL/';
+                
+                statusEl.textContent = translations[currentLang].statusConvertingPhoto;
+                const photoDataUrl = await imageToDataUrl(baseUrl + 'photo.jpg');
+
+                statusEl.textContent = translations[currentLang].statusConvertingIcon;
+                const faviconDataUrl = await imageToDataUrl(baseUrl + 'favicon.png');
+
+                statusEl.textContent = translations[currentLang].statusCreatingFile;
+                const docClone = document.documentElement.cloneNode(true);
+
+                const img = docClone.querySelector('img[src="photo.jpg"]');
+                if (img) img.src = photoDataUrl;
+
+                const favicons = docClone.querySelectorAll('link[href="favicon.png"]');
+                favicons.forEach(link => link.href = faviconDataUrl);
+
+                const htmlContent = "<!DOCTYPE html>\n" + docClone.outerHTML;
+                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = translations[currentLang].htmlCardFileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                statusEl.textContent = translations[currentLang].statusSuccess;
+                setTimeout(() => { statusEl.textContent = ''; }, 3000);
+
+            } catch (error) {
+                console.error("Échec du téléchargement de la carte:", error);
+                statusEl.textContent = translations[currentLang].errorPrefix + error.message;
+                setTimeout(() => { statusEl.textContent = ''; }, 5000);
             }
-
-            const favicons = docClone.querySelectorAll('link[href="favicon.png"]');
-            favicons.forEach(link => {
-                link.href = baseUrl + 'favicon.png';
-            });
-
-            // Obtenez le contenu HTML final du clone modifié
-            const htmlContent = "<!DOCTYPE html>\n" + docClone.outerHTML;
-
-            // Créez un blob et déclenchez le téléchargement
-            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = translations[currentLang].htmlCardFileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
     </script>
 </body>
