@@ -60,26 +60,16 @@
         </div>
         
         <!-- Section Boutons d'action principaux -->
-        <div class="mt-8 grid grid-cols-1 gap-4">
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="downloadVCard()" class="w-full px-4 py-3 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-800 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
-                    <i class="fas fa-user-plus icon"></i>
-                    <span class="ml-2" data-lang="addContact">Add to contacts</span>
-                </button>
-                <a href="https://drive.google.com/file/d/1Uy0nAw024lmktAaQWHOS0MX5uP-RO_4q/view?usp=sharing" target="_blank" class="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center text-center">
-                    <i class="fas fa-download icon"></i>
-                    <span class="ml-2" data-lang="companyProfile">Company Profile</span>
-                </a>
-            </div>
-             <!-- Bouton pour télécharger la carte -->
-            <button onclick="downloadCard()" class="w-full px-4 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
-                <i class="fas fa-id-card icon"></i>
-                <span class="ml-2" data-lang="downloadCard">Download Card</span>
+        <div class="mt-8 grid grid-cols-2 gap-4">
+            <button onclick="downloadVCard()" class="w-full px-4 py-3 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-800 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
+                <i class="fas fa-user-plus icon"></i>
+                <span class="ml-2" data-lang="addContact">Add to contacts</span>
             </button>
+            <a href="https://drive.google.com/file/d/1Uy0nAw024lmktAaQWHOS0MX5uP-RO_4q/view?usp=sharing" target="_blank" class="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center text-center">
+                <i class="fas fa-download icon"></i>
+                <span class="ml-2" data-lang="companyProfile">Company Profile</span>
+            </a>
         </div>
-
-        <!-- NOUVEAU: Zone de message pour le statut du téléchargement -->
-        <div id="status-message" class="text-center text-sm text-gray-500 mt-4 h-5"></div>
 
         <!-- Section Liens de Contact détaillés -->
         <div class="mt-8 space-y-4">
@@ -105,8 +95,8 @@
     <script>
         // Dictionnaire des traductions
         const translations = {
-            en: { jobTitle: "Interior Designer & Project Manager", addContact: "Add to contacts", companyProfile: "Company Profile", downloadCard: "Download Card", callMe: "Call me", sendEmail: "Send me an email", whatsapp: "WhatsApp", instagram: "Instagram", cardTitle: "Digital Card - Eng. Micheal Hamdy", vCardFileName: "Eng_Micheal_Hamdy.vcf", htmlCardFileName: "Digital_Card_Eng_Micheal_Hamdy.html", statusPreparing: "Preparing download...", statusConvertingPhoto: "Converting photo (1/2)...", statusConvertingIcon: "Converting icon (2/2)...", statusCreatingFile: "Creating file...", statusSuccess: "Download started!", errorPrefix: "Error: ", errorPhoto: "Could not load photo.", errorIcon: "Could not load icon." },
-            ar: { jobTitle: "مصمم داخلي ومدير مشاريع", addContact: "أضف إلى جهات الاتصال", companyProfile: "ملف الشركة", downloadCard: "تحميل البطاقة", callMe: "اتصل بي", sendEmail: "أرسل بريد إلكتروني", whatsapp: "واتساب", instagram: "انستغرام", cardTitle: "بطاقة رقمية - م. مايكل حمدي", vCardFileName: "م_مايكل_حمدي.vcf", htmlCardFileName: "بطاقة_رقمية_م_مايكل_حمدي.html", statusPreparing: "جاري تحضير التنزيل...", statusConvertingPhoto: "جاري تحويل الصورة (1/2)...", statusConvertingIcon: "جاري تحويل الأيقونة (2/2)...", statusCreatingFile: "جاري إنشاء الملف...", statusSuccess: "بدأ التنزيل!", errorPrefix: "خطأ: ", errorPhoto: "ไม่สามารถ تحميل الصورة.", errorIcon: "ไม่สามารถ تحميل الأيقونة." }
+            en: { jobTitle: "Interior Designer & Project Manager", addContact: "Add to contacts", companyProfile: "Company Profile", callMe: "Call me", sendEmail: "Send me an email", whatsapp: "WhatsApp", instagram: "Instagram", cardTitle: "Digital Card - Eng. Micheal Hamdy", vCardFileName: "Eng_Micheal_Hamdy.vcf" },
+            ar: { jobTitle: "مصمم داخلي ومدير مشاريع", addContact: "أضف إلى جهات الاتصال", companyProfile: "ملف الشركة", callMe: "اتصل بي", sendEmail: "أرسل بريد إلكتروني", whatsapp: "واتساب", instagram: "انستغرام", cardTitle: "بطاقة رقمية - م. مايكل حمدي", vCardFileName: "م_مايكل_حمدي.vcf" }
         };
 
         const langEnBtn = document.getElementById('lang-en');
@@ -151,61 +141,6 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-        
-        // CORRIGÉ : Nouvelle fonction qui intègre les images pour un téléchargement 100% autonome
-        async function downloadCard() {
-            const statusEl = document.getElementById('status-message');
-            statusEl.textContent = translations[currentLang].statusPreparing;
-
-            const imageToDataUrl = async (url) => {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Network response was not ok for ${url}`);
-                const blob = await response.blob();
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                });
-            };
-
-            try {
-                // Utiliser les URL complètes pour plus de fiabilité
-                const baseUrl = 'https://josephhk-1.github.io/Eng.michael-HAMDY-KAMAL/';
-                
-                statusEl.textContent = translations[currentLang].statusConvertingPhoto;
-                const photoDataUrl = await imageToDataUrl(baseUrl + 'photo.jpg');
-
-                statusEl.textContent = translations[currentLang].statusConvertingIcon;
-                const faviconDataUrl = await imageToDataUrl(baseUrl + 'favicon.png');
-
-                statusEl.textContent = translations[currentLang].statusCreatingFile;
-                const docClone = document.documentElement.cloneNode(true);
-
-                const img = docClone.querySelector('img[src="photo.jpg"]');
-                if (img) img.src = photoDataUrl;
-
-                const favicons = docClone.querySelectorAll('link[href="favicon.png"]');
-                favicons.forEach(link => link.href = faviconDataUrl);
-
-                const htmlContent = "<!DOCTYPE html>\n" + docClone.outerHTML;
-                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = translations[currentLang].htmlCardFileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                statusEl.textContent = translations[currentLang].statusSuccess;
-                setTimeout(() => { statusEl.textContent = ''; }, 3000);
-
-            } catch (error) {
-                console.error("Échec du téléchargement de la carte:", error);
-                statusEl.textContent = translations[currentLang].errorPrefix + error.message;
-                setTimeout(() => { statusEl.textContent = ''; }, 5000);
-            }
         }
     </script>
 </body>
