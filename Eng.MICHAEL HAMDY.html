@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte de Visite Digitale - Eng. Micheal Hamdy</title>
+    <link rel="icon" type="image/png" href="m:\MY BROTHER\NAWAT AL TALAEAA\LOGO\PNG\LOGO NAWAT AL TALEAA.png.png">
+    <link rel="apple-touch-icon" href="m:\MY BROTHER\NAWAT AL TALAEAA\LOGO\PNG\LOGO NAWAT AL TALEAA.png.png"> <!-- Pour les appareils Apple -->
+    <!-- Intégration de Tailwind CSS pour le style -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Police Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Appliquer la police Inter à tout le corps du document */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Supprime le flash bleu au toucher sur mobile */
+        }
+    </style>
+</head>
+<body class="bg-gray-200 flex items-center justify-center min-h-screen">
+
+    <!-- Conteneur principal de la carte -->
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 m-4">
+
+        <!-- Section Photo et Nom -->
+        <div class="flex flex-col items-center text-center">
+            <!-- REMPLACEZ-MOI: Changez le `src` pour mettre votre photo (optimisez-la pour le web) -->
+            <img class="w-32 h-32 rounded-full mb-4 ring-4 ring-blue-500 ring-offset-4 object-cover" 
+                 src="m:\photo.jpg" 
+                 alt="Photo de Eng. Micheal Hamdy"
+                 onerror="this.onerror=null;this.src='https://placehold.co/200x200/EFEFEF/1D4ED8?text=Photo';">
+            <h1 class="text-3xl font-bold text-gray-800 mt-4">Eng. Micheal Hamdy</h1>
+            <!-- REMPLACEZ-MOI: Changez le titre/profession -->
+            <p class="text-gray-500 mt-1 font-medium">Interior Designer & Project Manager</p>
+        </div>
+        
+        <!-- Section Boutons d'action principaux -->
+        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Bouton Ajouter aux contacts (VCard) -->
+            <button onclick="downloadVCard()" class="w-full px-6 py-4 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-800 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center">
+                <i class="fas fa-user-plus mr-2"></i>
+                Add to contacts
+            </button>
+            <!-- Bouton Profil de l'entreprise -->
+             <!-- REMPLACEZ-MOI: Changez le lien vers votre fichier PDF -->
+            <a href="m:\NAWAT AL TALAEA Profile Company.pdf" download="m:\NAWAT AL TALAEA Profile Company.pdf" class="w-full px-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center text-center">
+                <i class="fas fa-download mr-2"></i>
+                Company Profile
+            </a>
+        </div>
+
+
+        <!-- Section Liens de Contact détaillés -->
+        <div class="mt-8 space-y-4">
+            <!-- Téléphone -->
+            <!-- REMPLACEZ-MOI: Changez le numéro de téléphone dans href="tel:..." -->
+            <a href="tel:+966556988973" class="flex items-center p-4 bg-gray-100 hover:bg-blue-100 rounded-xl transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-phone fa-lg text-blue-600 w-6 text-center"></i>
+                <span class="ml-4 text-gray-700 font-semibold">Call me</span>
+            </a>
+            <!-- Email -->
+            <!-- REMPLACEZ-MOI: Changez l'adresse email dans href="mailto:..." -->
+            <a href="mailto: engmichaelh@gmail.com" class="flex items-center p-4 bg-gray-100 hover:bg-blue-100 rounded-xl transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-envelope fa-lg text-blue-600 w-6 text-center"></i>
+                <span class="ml-4 text-gray-700 font-semibold">Send me an email</span>
+            </a>
+            <!-- WhatsApp -->
+            <!-- REMPLACEZ-MOI: Changez le numéro WhatsApp dans href="..." (inclure le code pays) -->
+            <a href="https://wa.me/966556988973" target="_blank" class="flex items-center p-4 bg-gray-100 hover:bg-green-100 rounded-xl transition-all duration-300 transform hover:scale-105">
+                <i class="fab fa-whatsapp fa-lg text-green-500 w-6 text-center"></i>
+                <span class="ml-4 text-gray-700 font-semibold">WhatsApp</span>
+            </a>
+            <!-- Instagram -->
+            <!-- REMPLACEZ-MOI: Changez le nom d'utilisateur Instagram dans href="..." -->
+            <a href="https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr" target="_blank" class="flex items-center p-4 bg-gray-100 hover:bg-pink-100 rounded-xl transition-all duration-300 transform hover:scale-105">
+                <i class="fab fa-instagram fa-lg text-pink-500 w-6 text-center"></i>
+                <span class="ml-4 text-gray-700 font-semibold">Instagram</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour générer et télécharger le fichier VCard
+        function downloadVCard() {
+            // REMPLACEZ-MOI: Personnalisez les informations de contact ici
+            const contact = {
+                firstName: 'Micheal',
+                lastName: 'Hamdy',
+                title: 'Interior Designer & Project Manager',
+                phone: '+966556988973',
+                email: 'engmichaelh@gmail.com',
+                instagram: 'https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr' // juste le nom d'utilisateur
+            };
+
+            // Création du contenu du fichier VCard
+            const vCard = `BEGIN:VCARD
+VERSION:3.0
+N:${contact.lastName};${contact.firstName};;;
+FN:${contact.firstName} ${contact.lastName}
+TITLE:${contact.title}
+TEL;TYPE=CELL:${contact.phone}
+EMAIL:${contact.email}
+URL;type=pref:https://instagram.com/${contact.instagram}
+END:VCARD`;
+
+            // Création d'un Blob (fichier en mémoire)
+            const blob = new Blob([vCard], { type: 'text/vcard;charset=utf-8' });
+            
+            // Création d'un lien de téléchargement
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${contact.firstName}_${contact.lastName}.vcf`;
+            
+            // Simulation du clic pour démarrer le téléchargement
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
