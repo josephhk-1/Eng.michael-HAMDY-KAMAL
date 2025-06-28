@@ -114,7 +114,9 @@
             { name: { en: "Al Nakhla Compound - 500 kitchens", ar: "مشروع مدينة النخلة كمبوند عدد ٥٠٠ مطبخ" }, description: { en: "Large-scale deployment of 500 high-quality kitchens.", ar: "تنفيذ وتوريد ٥٠٠ مطبخ عالي الجودة." }},
             { name: { en: "Al Nakhla Compound - 10 Royal Villas", ar: "مشروع مدينة النخلة كمبوند عدد ١٠ فلل ملكية" }, description: { en: "Exclusive interior fit-out for 10 V.I.P. Royal Villas.", ar: "تنفيذ أعمال التصميم الداخلي الحصرية لعشر فلل ملكية." }},
         ];
+        // CORRIGÉ: Ajout de la nouvelle vidéo
         const mediaData = [
+            { youtubeId: "sBqj_I_b4jI", title: { en: "Kitchen Showcase", ar: "استعراض مطبخ" }, description: { en: "A showcase of a modern and functional kitchen, blending style and innovation.", ar: "استعراض لمطبخ عصري وعملي يجمع بين الأناقة والابتكار." }},
             { youtubeId: "Gz_w24Y1_h8", title: { en: "Modern Design Showcase", ar: "استعراض تصميم حديث" }, description: { en: "Highlighting clean lines and modern aesthetics.", ar: "تسليط الضوء على الخطوط النظيفة والجماليات الحديثة." }},
         ];
 
@@ -203,7 +205,18 @@
         }
 
         // --- FONCTIONS EXTERNES ---
-        function downloadVCard() { /* ... (code inchangé) ... */ }
+        function downloadVCard() {
+            const T = translations[currentLang];
+            const contact = { firstName: 'Micheal', lastName: 'Hamdy', title: T.jobTitle, phone: '+966556988973', email: 'engmichaelh@gmail.com', instagramUrl: 'https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr' };
+            const vCard = `BEGIN:VCARD\nVERSION:3.0\nN:${contact.lastName};${contact.firstName};;;\nFN:${contact.firstName} ${contact.lastName}\nTITLE:${contact.title}\nTEL;TYPE=CELL:${contact.phone}\nEMAIL:${contact.email}\nURL:${contact.instagramUrl}\nEND:VCARD`;
+            const blob = new Blob([vCard], { type: 'text/vcard;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = T.vCardFileName || 'contact.vcf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
         // --- LOGIQUE D'ANIMATION (RESTAURÉE) ---
         const cardContainer = document.getElementById('card-container');
@@ -223,7 +236,13 @@
             document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
             setCanvasSize();
             setLanguage('en');
-            toggleTheme(); // Pour synchroniser l'icône avec le thème par défaut
+            // Initialise le thème et l'animation
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('theme-icon-light').classList.toggle('hidden', isDark);
+            document.getElementById('theme-icon-dark').classList.toggle('hidden', !isDark);
+            initParticles();
+            animateParticles();
         });
         window.addEventListener('resize', () => { clearTimeout(window.resizeTimer); window.resizeTimer = setTimeout(() => { setCanvasSize(); initParticles(); }, 250); });
 
