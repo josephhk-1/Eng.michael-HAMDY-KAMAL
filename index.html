@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" class="dark"> <!-- Le mode sombre avec fond doré est le défaut -->
+<html lang="en" dir="ltr" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Card - Eng. Micheal Hamdy</title>
     
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
+    <!-- CORRIGÉ: Liens mis à jour pour le nouveau logo -->
+    <link rel="icon" type="image/png" href="rattanpalacelogo.png">
+    <link rel="apple-touch-icon" href="rattanpalacelogo.png">
 
     <!-- Tailwind CSS & Font Awesome -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,232 +20,403 @@
     
     <style>
         :root {
-            --bg-page: #e5e7eb; --bg-card: rgba(255, 255, 255, 0.7); --text-primary: #1f2937; --text-secondary: #4b5563; --text-links: #374151; --bg-links: rgba(255, 255, 255, 0.8);
+            /* Couleurs Mode Clair (Bloom Lavande) */
+            --bg-page: #f3e8ff; /* Très léger lavande */
+            --bg-card: rgba(255, 255, 255, 0.7);
+            --text-primary: #1f2937; 
+            --text-secondary: #4b5563; 
+            --text-links: #4c1d95; /* Violet foncé */
+            --bg-links: rgba(233, 213, 255, 0.6); /* Lavande transparent */
+            --accent-color: #8b5cf6; /* Violet vibrante */
         }
         html.dark {
-            --bg-page: #111827; --bg-card: rgba(23, 31, 42, 0.75); --text-primary: #f9fafb; --text-secondary: #d1d5db; --text-links: #e5e7eb; --bg-links: rgba(55, 65, 81, 0.5);
+            /* Couleurs Mode Sombre (Fond Profond + Lavande) */
+            --bg-page: #0f0518; /* Violet très sombre presque noir */
+            --bg-card: rgba(30, 27, 75, 0.6); /* Indigo profond */
+            --text-primary: #f9fafb; 
+            --text-secondary: #e9d5ff; /* Lavande clair */
+            --text-links: #e5e7eb; 
+            --bg-links: rgba(76, 29, 149, 0.4); /* Violet sombre transparent */
+            --particle-color: 'rgba(212, 175, 55, 0.5)'; /* OR (Gold) conservé pour les particules */
+            --accent-color: #a78bfa; /* Lavande lumineux */
         }
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; background-color: var(--bg-page); transition: background-color 0.5s ease; }
         html[dir="rtl"] body { font-family: 'Cairo', sans-serif; }
-        .lang-btn.active { background-color: #3B82F6; color: white; font-weight: bold; }
+        
+        .lang-btn.active { background-color: var(--accent-color); color: white; font-weight: bold; }
+        
         #card-background-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         .page { display: none; transition: opacity 0.3s ease-in-out; }
-        .page.active { display: block; }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
-        .animate-float { animation: float 4s ease-in-out infinite; }
+        .page.active { display: block; animation: fadeIn 0.3s ease-out; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+        .hover-float:hover { animation: float 2s ease-in-out infinite; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
     <!-- Conteneur principal -->
-    <div class="relative w-full max-w-md rounded-3xl shadow-2xl p-6 sm:p-8 overflow-hidden transition-colors duration-500" id="card-container" style="background-color: var(--bg-card); backdrop-filter: blur(12px);">
+    <div class="relative w-full max-w-md rounded-3xl shadow-2xl p-6 sm:p-8 overflow-hidden transition-colors duration-500 border border-white/10" id="card-container" style="background-color: var(--bg-card); backdrop-filter: blur(12px);">
         
         <canvas id="card-background-canvas"></canvas>
 
-        <!-- PAGE 1: CARTE DE VISITE PRINCIPALE -->
-        <div id="main-card" class="page active">
-            <div class="relative z-10">
-                <!-- Barre de contrôle -->
-                <div class="flex justify-between items-center mb-6">
-                    <div class="flex border border-gray-300 dark:border-gray-600 rounded-lg p-1 bg-white/30 dark:bg-gray-800/30">
-                        <button id="lang-en" class="lang-btn px-3 py-1 rounded-md text-sm text-gray-700 dark:text-gray-300">English</button>
-                        <button id="lang-ar" class="lang-btn px-3 py-1 rounded-md text-sm text-gray-700 dark:text-gray-300">العربية</button>
-                    </div>
-                    <button id="theme-toggle" class="p-2 rounded-lg bg-white/30 dark:bg-gray-800/30 text-gray-700 dark:text-yellow-400 border border-gray-300 dark:border-gray-600">
-                        <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                        <svg id="theme-icon-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                    </button>
-                </div>
+        <!-- Conteneur pour le contenu dynamique -->
+        <main id="app-content" class="relative z-10"></main>
 
-                <!-- Section Photo et Nom -->
-                <div class="flex flex-col items-center text-center">
-                    <img class="w-32 h-32 rounded-full mb-4 ring-4 ring-blue-500 ring-offset-4 object-cover" src="photo.jpg" alt="Photo de Eng. Micheal Hamdy">
-                    <h1 class="text-3xl font-bold mt-4 transition-colors duration-500" style="color: var(--text-primary);" data-lang="name">Eng. Micheal Hamdy</h1>
-                    <p class="mt-1 font-medium transition-colors duration-500" style="color: var(--text-secondary);" data-lang="jobTitle">Interior Designer & Project Manager</p>
-                </div>
-                
-                <!-- Section Boutons d'action -->
-                <div class="mt-8 grid grid-cols-2 gap-4">
-                    <button onclick="downloadVCard()" class="w-full px-4 py-3 bg-gray-700 dark:bg-gray-600 text-white font-bold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-500 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center"><i class="fas fa-user-plus icon"></i><span class="ml-2" data-lang="addContact"></span></button>
-                    <a href="https://drive.google.com/file/d/1Uy0nAw024lmktAaQWHOS0MX5uP-RO_4q/view?usp=sharing" target="_blank" class="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center text-center"><i class="fas fa-download icon"></i><span class="ml-2" data-lang="companyProfile"></span></a>
-                </div>
-                <div class="mt-4"><button onclick="showPage('projects')" class="w-full px-4 py-3 font-bold text-white rounded-xl transition-all duration-300 shadow-lg transform hover:scale-105 flex items-center justify-center text-center bg-gradient-to-r from-purple-500 to-indigo-600 animate-pulse"><i class="fas fa-briefcase icon"></i><span class="ml-2" data-lang="lastProjects"></span></button></div>
-                
-                <!-- Section Liens de Contact -->
-                <div class="mt-8 space-y-4">
-                    <a href="tel:+966556988973" class="flex items-center p-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:bg-blue-500/10" style="background-color: var(--bg-links);"><i class="fas fa-phone fa-lg text-blue-600 dark:text-blue-400 w-6 text-center icon"></i><span class="ml-4 font-semibold" style="color: var(--text-links);" data-lang="callMe"></span></a>
-                    <a href="mailto:engmichaelh@gmail.com" class="flex items-center p-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:bg-blue-500/10" style="background-color: var(--bg-links);"><i class="fas fa-envelope fa-lg text-blue-600 dark:text-blue-400 w-6 text-center icon"></i><span class="ml-4 font-semibold" style="color: var(--text-links);" data-lang="sendEmail"></span></a>
-                    <a href="https://wa.me/966556988973" target="_blank" class="flex items-center p-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:bg-green-500/10" style="background-color: var(--bg-links);"><i class="fab fa-whatsapp fa-lg text-green-500 w-6 text-center icon"></i><span class="ml-4 font-semibold" style="color: var(--text-links);" data-lang="whatsapp"></span></a>
-                    <a href="https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr" target="_blank" class="flex items-center p-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:bg-pink-500/10" style="background-color: var(--bg-links);"><i class="fab fa-instagram fa-lg text-pink-500 w-6 text-center icon"></i><span class="ml-4 font-semibold" style="color: var(--text-links);" data-lang="instagram"></span></a>
-                </div>
-            </div> 
-        </div>
-
-        <!-- PAGE 2: PROJETS -->
-        <div id="projects-page" class="page">
-            <div class="relative z-10">
-                <div class="flex items-center justify-between mb-6"><button onclick="showPage('main')" class="p-2 rounded-lg bg-white/30 dark:bg-gray-800/30 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"><i class="fas fa-arrow-left"></i> <span data-lang="backButton"></span></button></div>
-                <h2 class="text-xl text-center font-bold mb-4" style="color: var(--text-primary);" data-lang="projectsTitle"></h2>
-                <div id="projects-list" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2"></div>
-            </div>
-        </div>
-
-        <!-- PAGE 3: MÉDIA -->
-        <div id="media-page" class="page">
-            <div class="relative z-10">
-                <div class="flex items-center justify-between mb-6"><button onclick="showPage('main')" class="p-2 rounded-lg bg-white/30 dark:bg-gray-800/30 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"><i class="fas fa-arrow-left"></i> <span data-lang="backButton"></span></button></div>
-                <h2 class="text-xl text-center font-bold mb-4" style="color: var(--text-primary);" data-lang="mediaTitle"></h2>
-                <div id="media-list" class="space-y-6 max-h-[70vh] overflow-y-auto pr-2"></div>
-            </div>
-        </div>
-
-        <!-- Bouton flottant pour les médias -->
-        <button id="media-button" onclick="showPage('media')" class="absolute z-20 bottom-5 w-14 h-14 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg transform hover:scale-110 transition-all duration-300 animate-float">
-            <i class="fas fa-play text-xl"></i>
-        </button>
     </div>
 
     <script>
-        // --- DONNÉES ---
-        const translations = {
-            en: { name: "Eng. Micheal Hamdy", jobTitle: "Interior Designer & Project Manager", addContact: "Add to contacts", companyProfile: "Company Profile", lastProjects: "Last Projects", callMe: "Call me", sendEmail: "Send me an email", whatsapp: "WhatsApp", instagram: "Instagram", cardTitle: "Digital Card - Eng. Micheal Hamdy", projectsTitle: "My Projects", mediaTitle: "Media Gallery", backButton: "Back" },
-            ar: { name: "المهندس مايكل حمدي", jobTitle: "مصمم داخلي ومدير مشاريع", addContact: "أضف إلى جهات الاتصال", companyProfile: "ملف الشركة", lastProjects: "آخر المشاريع", callMe: "اتصل بي", sendEmail: "أرسل بريد إلكتروني", whatsapp: "واتساب", instagram: "انستغرام", cardTitle: "بطاقة رقمية - م. مايكل حمدي", projectsTitle: "مشاريعي", mediaTitle: "معرض", backButton: "رجوع" }
+        // --- 1. ÉTAT CENTRAL DE L'APPLICATION (Attaché à window pour la robustesse) ---
+        window.appData = {
+            state: { currentPage: 'main', currentLang: 'en', isDarkTheme: true },
+            
+            data: {
+                translations: {
+                    en: { 
+                        name: "Eng. Micheal Hamdy", 
+                        jobTitle: "CEO", 
+                        companyName: "RATTAN PALACE",
+                        addContact: "Add to contacts", 
+                        companyProfile: "Company Profile", 
+                        lastProjects: "Last Projects", 
+                        callMe: "Call me", 
+                        emailLabel: "Email Michael",
+                        infoLabel: "Company Info",
+                        locationLabel: "Location",
+                        reviewLabel: "Rate us on Google",
+                        whatsapp: "WhatsApp", 
+                        instagram: "Instagram", 
+                        cardTitle: "Digital Card - Eng. Micheal Hamdy", 
+                        vCardFileName: "Eng_Micheal_Hamdy.vcf", 
+                        projectsTitle: "My Projects", 
+                        backButton: "Back" 
+                    },
+                    ar: { 
+                        name: "المهندس مايكل حمدي", 
+                        jobTitle: "المدير التنفيذي", 
+                        companyName: "قصر الخيزران",
+                        addContact: "أضف إلى جهات الاتصال", 
+                        companyProfile: "ملف الشركة", 
+                        lastProjects: "آخر المشاريع", 
+                        callMe: "اتصل بي", 
+                        emailLabel: "راسل مايكل",
+                        infoLabel: "بريد الشركة",
+                        locationLabel: "الموقع",
+                        reviewLabel: "قيمنا على جوجل",
+                        whatsapp: "واتساب", 
+                        instagram: "انستغرام", 
+                        cardTitle: "بطاقة رقمية - م. مايكل حمدي", 
+                        vCardFileName: "م_مايكل_حمدي.vcf", 
+                        projectsTitle: "مشاريعي", 
+                        backButton: "رجوع" 
+                    }
+                },
+                projects: [
+                    { name: { en: "Al Nakhla Compound - 500 kitchens", ar: "مشروع مدينة النخلة كمبوند عدد ٥٠٠ مطبخ" }, description: { en: "Large-scale deployment of 500 high-quality kitchens.", ar: "تنفيذ وتوريد ٥٠٠ مطبخ عالي الجودة." }},
+                    { name: { en: "Al Nakhla Compound - 10 Royal Villas", ar: "مشروع مدينة النخلة كمبوند عدد ١٠ فلل ملكية" }, description: { en: "Exclusive interior fit-out for 10 V.I.P. Royal Villas.", ar: "تنفيذ أعمال التصميم الداخلي الحصرية لعشر فلل ملكية." }},
+                    { name: { en: "Al Nakhla Compound - 30 executive villas", ar: "مشروع مدينة النخلة كمبوند عدد ٣٠ فيلل تنفيذية" }, description: { en: "Delivered 30 executive villas with premium interior solutions.", ar: "تسليم ٣٠ فيلا تنفيذية مع حلول داخلية متميزة." }},
+                    { name: { en: "Hilton Hotel King Saud University", ar: "مشروع فندق الهيلتون جامعه الملك سعود" }, description: { en: "Marble columns and quartz counters execution.", ar: "تنفيذ أعمدة رخامية وتجاليد كوارتز." }},
+                ]
+            }
         };
-        const projectsData = [
-            { name: { en: "Al Nakhla Compound - 500 kitchens", ar: "مشروع مدينة النخلة كمبوند عدد ٥٠٠ مطبخ" }, description: { en: "Large-scale deployment of 500 high-quality kitchens.", ar: "تنفيذ وتوريد ٥٠٠ مطبخ عالي الجودة." }},
-            { name: { en: "Al Nakhla Compound - 10 Royal Villas", ar: "مشروع مدينة النخلة كمبوند عدد ١٠ فلل ملكية" }, description: { en: "Exclusive interior fit-out for 10 V.I.P. Royal Villas.", ar: "تنفيذ أعمال التصميم الداخلي الحصرية لعشر فلل ملكية." }},
-        ];
-        // CORRIGÉ: Ajout de la nouvelle vidéo
-        const mediaData = [
-            { youtubeId: "sBqj_I_b4jI", title: { en: "Kitchen Showcase", ar: "استعراض مطبخ" }, description: { en: "A showcase of a modern and functional kitchen, blending style and innovation.", ar: "استعراض لمطبخ عصري وعملي يجمع بين الأناقة والابتكار." }},
-            { youtubeId: "Gz_w24Y1_h8", title: { en: "Modern Design Showcase", ar: "استعراض تصميم حديث" }, description: { en: "Highlighting clean lines and modern aesthetics.", ar: "تسليط الضوء على الخطوط النظيفة والجماليات الحديثة." }},
-        ];
 
-        // --- ÉTAT ---
-        let currentLang = 'en';
-        let animationFrameId;
-
-        // --- ÉLÉMENTS DU DOM ---
-        const pages = {
-            main: document.getElementById('main-card'),
-            projects: document.getElementById('projects-page'),
-            media: document.getElementById('media-page'),
+        // --- 2. FONCTIONS GLOBALES (Accessibles via window) ---
+        
+        window.setLang = function(lang) { 
+            window.appData.state.currentLang = lang; 
+            renderApp(); 
         };
-        const mediaButton = document.getElementById('media-button');
 
-        // --- FONCTIONS DE MISE À JOUR ---
-        function setLanguage(lang) {
-            currentLang = lang;
-            const T = translations[lang];
-            document.documentElement.lang = lang;
+        window.setTheme = function() { 
+            const newState = !window.appData.state.isDarkTheme;
+            window.appData.state.isDarkTheme = newState;
+            document.documentElement.classList.toggle('dark', newState);
+            
+            renderApp();
+            
+            // Relancer l'animation pour changer la couleur des particules
+            if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId);
+            initParticles();
+            animateParticles();
+        };
+
+        window.showPage = function(page) { 
+            window.appData.state.currentPage = page; 
+            renderApp(); 
+        };
+
+        window.downloadVCard = function() {
+            const state = window.appData.state;
+            const T = window.appData.data.translations[state.currentLang];
+            const contact = { 
+                firstName: 'Micheal', 
+                lastName: 'Hamdy', 
+                title: T.jobTitle, 
+                company: T.companyName,
+                phone: '+966556988973', 
+                email: 'michael@rattanpalace.com', 
+                emailInfo: 'info@rattanpalace.com',
+                instagramUrl: 'https://www.instagram.com/rattanpalace.sa/',
+                website: 'https://rattanpalace.com'
+            };
+            const vCard = `BEGIN:VCARD\nVERSION:3.0\nN:${contact.lastName};${contact.firstName};;;\nFN:${contact.firstName} ${contact.lastName}\nTITLE:${contact.title}\nORG:${contact.company}\nTEL;TYPE=CELL:${contact.phone}\nEMAIL;type=INTERNET;type=WORK:${contact.email}\nEMAIL;type=INTERNET;type=HOME:${contact.emailInfo}\nURL:${contact.instagramUrl}\nEND:VCARD`;
+            
+            try {
+                const blob = new Blob([vCard], { type: 'text/vcard;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = T.vCardFileName || 'contact.vcf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {
+                console.error("VCard download failed", e);
+            }
+        };
+
+        // --- 3. MOTEUR DE RENDU ---
+        function renderApp() {
+            const content = document.getElementById('app-content');
+            const state = window.appData.state;
+            const lang = state.currentLang;
+            const T = window.appData.data.translations[lang];
+            
+            // Mise à jour de la direction du texte
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             document.title = T.cardTitle;
 
-            document.querySelectorAll('[data-lang]').forEach(el => {
-                const key = el.dataset.lang;
-                if (T[key]) el.textContent = T[key];
-            });
-
-            mediaButton.classList.toggle('right-5', lang === 'en');
-            mediaButton.classList.toggle('left-5', lang === 'ar');
-            
-            document.querySelectorAll('.icon').forEach(icon => {
-                const span = icon.nextElementSibling;
-                if(span) {
-                    span.classList.toggle('ml-2', lang === 'en');
-                    span.classList.toggle('mr-2', lang === 'ar');
-                    span.classList.toggle('ml-4', lang === 'en');
-                    span.classList.toggle('mr-4', lang === 'ar');
-                }
-            });
-
-            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
-            document.getElementById('lang-ar').classList.toggle('active', lang === 'ar');
-            
-            renderProjects();
-            renderMedia();
-        }
-
-        function toggleTheme() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            document.getElementById('theme-icon-light').classList.toggle('hidden', isDark);
-            document.getElementById('theme-icon-dark').classList.toggle('hidden', !isDark);
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            initParticles();
-            animateParticles();
-        }
-
-        function showPage(pageId) {
-            Object.keys(pages).forEach(key => {
-                pages[key].classList.toggle('active', key === pageId);
-            });
-            mediaButton.style.display = (pageId === 'main') ? 'flex' : 'none';
-        }
-
-        // --- FONCTIONS DE RENDU DE CONTENU ---
-        function renderProjects() {
-            const list = document.getElementById('projects-list');
-            list.innerHTML = projectsData.map(p => `
-                <div class="p-4 rounded-xl" style="background-color: var(--bg-links);">
-                    <h3 class="font-bold" style="color: var(--text-primary);">${p.name[currentLang]}</h3>
-                    <p class="text-sm mt-2" style="color: var(--text-links);">${p.description[currentLang]}</p>
-                </div>
-            `).join('');
-        }
-
-        function renderMedia() {
-            const list = document.getElementById('media-list');
-            list.innerHTML = mediaData.map(m => `
-                <div class="p-4 rounded-xl" style="background-color: var(--bg-links);">
-                    <h3 class="font-bold mb-2" style="color: var(--text-primary);">${m.title[currentLang]}</h3>
-                    <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/${m.youtubeId}" frameborder="0" allowfullscreen></iframe>
+            // HTML Commun : En-tête (Langue + Thème)
+            const headerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex border border-gray-300 dark:border-gray-500 rounded-lg p-1 bg-white/40 dark:bg-gray-800/40 backdrop-blur-md">
+                        <button onclick="window.setLang('en')" class="lang-btn px-3 py-1 rounded-md text-sm transition-all duration-300 ${lang === 'en' ? 'active' : 'text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700'}">English</button>
+                        <button onclick="window.setLang('ar')" class="lang-btn px-3 py-1 rounded-md text-sm transition-all duration-300 ${lang === 'ar' ? 'active' : 'text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700'}">العربية</button>
                     </div>
+                    <button onclick="window.setTheme()" class="p-2 rounded-lg bg-white/40 dark:bg-gray-800/40 text-yellow-500 dark:text-yellow-400 border border-gray-300 dark:border-gray-500 hover:scale-110 transition-transform">
+                        ${state.isDarkTheme ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>'}
+                    </button>
                 </div>
-            `).join('');
+            `;
+
+            const backButtonHTML = `
+                <div class="flex items-center justify-between mb-6">
+                    <button onclick="window.showPage('main')" class="px-4 py-2 rounded-lg bg-white/40 dark:bg-gray-800/40 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-500 hover:bg-white/60 transition-all">
+                        <i class="fas fa-arrow-${lang === 'ar' ? 'right' : 'left'}"></i> ${T.backButton}
+                    </button>
+                </div>
+            `;
+
+            let pageHTML = '';
+
+            if (state.currentPage === 'main') {
+                pageHTML = `
+                    ${headerHTML}
+                    
+                    <!-- Profil -->
+                    <div class="flex flex-col items-center text-center mb-8">
+                        <div class="relative">
+                            <img class="w-32 h-32 rounded-full mb-4 ring-4 ring-purple-500 ring-offset-2 ring-offset-transparent object-cover shadow-lg" src="joseph carte photo.png" alt="Micheal Hamdy">
+                            <div class="absolute bottom-4 right-0 w-6 h-6 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+                        </div>
+                        <h1 class="text-3xl font-bold mt-2" style="color: var(--text-primary);">${T.name}</h1>
+                        <p class="text-lg font-medium opacity-90" style="color: var(--text-secondary);">${T.jobTitle}</p>
+                        <p class="text-sm font-bold mt-1 tracking-wide uppercase text-purple-600 dark:text-purple-400">${T.companyName}</p>
+                    </div>
+                    
+                    <!-- Actions Principales -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <button onclick="window.downloadVCard()" class="py-3 px-4 rounded-xl bg-gray-800 dark:bg-gray-700 text-white font-semibold shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2">
+                            <i class="fas fa-user-plus"></i> <span class="text-sm">${T.addContact}</span>
+                        </button>
+                        <a href="https://drive.google.com/file/d/1Uy0nAw024lmktAaQWHOS0MX5uP-RO_4q/view?usp=sharing" target="_blank" class="py-3 px-4 rounded-xl bg-purple-600 text-white font-semibold shadow-lg hover:bg-purple-700 hover:scale-105 transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-download"></i> <span class="text-sm">${T.companyProfile}</span>
+                        </a>
+                    </div>
+
+                    <!-- Bouton Projets (Lavande) -->
+                    <button onclick="window.showPage('projects')" class="w-full mb-8 py-4 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold shadow-lg hover:shadow-purple-500/50 hover:scale-[1.02] transition-all flex items-center justify-center gap-3">
+                        <i class="fas fa-briefcase"></i> ${T.lastProjects}
+                    </button>
+                    
+                    <!-- Liste Contact -->
+                    <div class="space-y-3">
+                        <!-- Téléphone -->
+                        <a href="tel:+966556988973" class="flex items-center p-3 rounded-xl transition-all hover:translate-x-1" style="background-color: var(--bg-links);">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 rtl:mr-0 rtl:ml-3">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs opacity-70" style="color: var(--text-secondary);">${T.callMe}</p>
+                                <p class="font-semibold text-sm" style="color: var(--text-primary);">+966 55 698 8973</p>
+                            </div>
+                        </a>
+
+                        <!-- Email Michael -->
+                        <a href="mailto:michael@rattanpalace.com" class="flex items-center p-3 rounded-xl transition-all hover:translate-x-1" style="background-color: var(--bg-links);">
+                            <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mr-3 rtl:mr-0 rtl:ml-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs opacity-70" style="color: var(--text-secondary);">${T.emailLabel}</p>
+                                <p class="font-semibold text-sm break-all" style="color: var(--text-primary);">michael@rattanpalace.com</p>
+                            </div>
+                        </a>
+
+                        <!-- Email Info -->
+                        <a href="mailto:info@rattanpalace.com" class="flex items-center p-3 rounded-xl transition-all hover:translate-x-1" style="background-color: var(--bg-links);">
+                            <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3 rtl:mr-0 rtl:ml-3">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs opacity-70" style="color: var(--text-secondary);">${T.infoLabel}</p>
+                                <p class="font-semibold text-sm break-all" style="color: var(--text-primary);">info@rattanpalace.com</p>
+                            </div>
+                        </a>
+
+                        <!-- WhatsApp -->
+                        <a href="https://wa.me/966556988973" target="_blank" class="flex items-center p-3 rounded-xl transition-all hover:translate-x-1" style="background-color: var(--bg-links);">
+                            <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3 rtl:mr-0 rtl:ml-3">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                            </div>
+                            <span class="font-semibold" style="color: var(--text-primary);">${T.whatsapp}</span>
+                        </a>
+
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/rattanpalace.sa/" target="_blank" class="flex items-center p-3 rounded-xl transition-all hover:translate-x-1" style="background-color: var(--bg-links);">
+                            <div class="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mr-3 rtl:mr-0 rtl:ml-3">
+                                <i class="fab fa-instagram text-lg"></i>
+                            </div>
+                            <span class="font-semibold" style="color: var(--text-primary);">${T.instagram}</span>
+                        </a>
+
+                        <!-- Location (Google Maps) -->
+                        <a href="https://www.google.com/maps/search/?api=1&query=Rattan+Palace" target="_blank" class="flex items-center p-3 rounded-xl transition-all hover:translate-x-1" style="background-color: var(--bg-links);">
+                            <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center mr-3 rtl:mr-0 rtl:ml-3">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <span class="font-semibold" style="color: var(--text-primary);">${T.locationLabel}</span>
+                        </a>
+                    </div>
+
+                    <!-- Google Review (Footer) -->
+                    <div class="mt-8 text-center">
+                        <a href="https://search.google.com/local/writereview?placeid=Placeholder" target="_blank" class="inline-flex items-center gap-2 text-sm opacity-70 hover:opacity-100 transition-opacity" style="color: var(--text-secondary);">
+                            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" class="w-5 h-5">
+                            </div>
+                            <span>${T.reviewLabel}</span>
+                        </a>
+                    </div>
+                `;
+            } else if (state.currentPage === 'projects') {
+                pageHTML = `
+                    ${backButtonHTML}
+                    <h2 class="text-2xl text-center font-bold mb-6" style="color: var(--text-primary);">${T.projectsTitle}</h2>
+                    
+                    <div class="space-y-4 max-h-[65vh] overflow-y-auto pr-1 scrollbar-hide">
+                        ${window.appData.data.projects.map(p => `
+                            <a href="https://www.instagram.com/rattanpalace.sa/" target="_blank" class="block p-5 rounded-xl transition-all duration-300 hover:scale-[1.02] border border-white/5" style="background-color: var(--bg-links);">
+                                <div class="flex justify-between items-start gap-4">
+                                    <div>
+                                        <h3 class="font-bold text-lg leading-tight" style="color: var(--text-primary);">${p.name[lang]}</h3>
+                                        <p class="text-sm mt-2 opacity-80" style="color: var(--text-links);">${p.description[lang]}</p>
+                                    </div>
+                                    <i class="fab fa-instagram text-pink-500 text-2xl mt-1"></i>
+                                </div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            content.innerHTML = pageHTML;
         }
 
-        // --- FONCTIONS EXTERNES ---
-        function downloadVCard() {
-            const T = translations[currentLang];
-            const contact = { firstName: 'Micheal', lastName: 'Hamdy', title: T.jobTitle, phone: '+966556988973', email: 'engmichaelh@gmail.com', instagramUrl: 'https://www.instagram.com/nawataltalaea?igsh=ZThlaDlwaTQzYzky&utm_source=qr' };
-            const vCard = `BEGIN:VCARD\nVERSION:3.0\nN:${contact.lastName};${contact.firstName};;;\nFN:${contact.firstName} ${contact.lastName}\nTITLE:${contact.title}\nTEL;TYPE=CELL:${contact.phone}\nEMAIL:${contact.email}\nURL:${contact.instagramUrl}\nEND:VCARD`;
-            const blob = new Blob([vCard], { type: 'text/vcard;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = T.vCardFileName || 'contact.vcf';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // --- LOGIQUE D'ANIMATION (RESTAURÉE) ---
-        const cardContainer = document.getElementById('card-container');
-        const canvas = document.getElementById('card-background-canvas');
-        const ctx = canvas.getContext('2d');
+        // --- 4. ANIMATION (Particules Dorées pour Mode Sombre) ---
         let particlesArray;
-        function setCanvasSize() { canvas.width = cardContainer.offsetWidth; canvas.height = cardContainer.offsetHeight; }
-        class Particle { constructor(x, y, dX, dY, s, c) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=s; this.color=c; } draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fillStyle=this.color; ctx.fill(); } update() { if(this.x>canvas.width||this.x<0) this.directionX=-this.directionX; if(this.y>canvas.height||this.y<0) this.directionY=-this.directionY; this.x+=this.directionX; this.y+=this.directionY; this.draw(); } }
-        function initParticles() { const isDark = document.documentElement.classList.contains('dark'); const pColor = isDark ? 'rgba(212, 175, 55, 0.4)' : 'rgba(0, 0, 0, 0.15)'; particlesArray = []; let num = (canvas.width * canvas.height) / 9000; for(let i=0; i<num; i++){ let size = (Math.random()*2)+0.5; let x = (Math.random()*(canvas.width-size*2))+size; let y = (Math.random()*(canvas.height-size*2))+size; let dX = (Math.random()*0.3)-0.15; let dY = (Math.random()*0.3)-0.15; particlesArray.push(new Particle(x,y,dX,dY,size,pColor)); } }
-        function connectParticles() { const isDark = document.documentElement.classList.contains('dark'); const lColor = isDark ? 'rgba(212, 175, 55, 0.4)' : 'rgba(0, 0, 0, 0.15)'; let opacity; for(let a=0; a<particlesArray.length; a++){ for(let b=a; b<particlesArray.length; b++){ let dist = ((particlesArray[a].x-particlesArray[b].x)**2)+((particlesArray[a].y-particlesArray[b].y)**2); if(dist < (canvas.width/7)*(canvas.height/7)){ opacity = 1-(dist/20000); ctx.strokeStyle = lColor.replace(/,[^,]*\)/, `, ${opacity*0.5})`); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke(); } } } }
-        function animateParticles() { animationFrameId = requestAnimationFrame(animateParticles); ctx.clearRect(0,0,canvas.width,canvas.height); for(let i=0; i<particlesArray.length; i++) particlesArray[i].update(); connectParticles(); }
+        
+        function initParticles() {
+            const canvas = document.getElementById('card-background-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const container = document.getElementById('card-container');
+            
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+
+            // Couleur des particules : OR si sombre, GRIS si clair (mais l'utilisateur veut Or tout le temps ou défaut ?)
+            // "keep the background with gold" -> On force l'or en mode sombre
+            const isDark = window.appData.state.isDarkTheme;
+            const pColor = isDark ? 'rgba(212, 175, 55, 0.4)' : 'rgba(100, 100, 100, 0.15)'; 
+            
+            particlesArray = [];
+            let num = (canvas.width * canvas.height) / 8000;
+            
+            for(let i=0; i<num; i++){
+                let size = (Math.random()*2)+0.5;
+                let x = Math.random() * canvas.width;
+                let y = Math.random() * canvas.height;
+                let dX = (Math.random()*0.4)-0.2;
+                let dY = (Math.random()*0.4)-0.2;
+                particlesArray.push({x, y, dX, dY, size, color: pColor});
+            }
+        }
+
+        function animateParticles() {
+            const canvas = document.getElementById('card-background-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            
+            const isDark = window.appData.state.isDarkTheme;
+            // Couleur des lignes : Or si sombre
+            const lColor = isDark ? '212, 175, 55' : '100, 100, 100';
+
+            particlesArray.forEach(p => {
+                p.x += p.dX;
+                p.y += p.dY;
+                
+                if(p.x > canvas.width || p.x < 0) p.dX = -p.dX;
+                if(p.y > canvas.height || p.y < 0) p.dY = -p.dY;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+            });
+            
+            // Connexions
+            for(let a=0; a<particlesArray.length; a++){
+                for(let b=a; b<particlesArray.length; b++){
+                    let dist = ((particlesArray[a].x-particlesArray[b].x)**2)+((particlesArray[a].y-particlesArray[b].y)**2);
+                    if(dist < (canvas.width/6)*(canvas.height/6)){
+                        let opacity = 1-(dist/15000);
+                        ctx.strokeStyle = `rgba(${lColor}, ${opacity*0.4})`;
+                        ctx.lineWidth=1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            window.animationFrameId = requestAnimationFrame(animateParticles);
+        }
 
         // --- INITIALISATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
-            document.getElementById('lang-ar').addEventListener('click', () => setLanguage('ar'));
-            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-            setCanvasSize();
-            setLanguage('en');
-            // Initialise le thème et l'animation
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            const isDark = document.documentElement.classList.contains('dark');
-            document.getElementById('theme-icon-light').classList.toggle('hidden', isDark);
-            document.getElementById('theme-icon-dark').classList.toggle('hidden', !isDark);
             initParticles();
             animateParticles();
+            renderApp(); // Premier rendu
+            
+            // Gestion du redimensionnement
+            window.addEventListener('resize', () => { 
+                initParticles(); 
+            });
         });
-        window.addEventListener('resize', () => { clearTimeout(window.resizeTimer); window.resizeTimer = setTimeout(() => { setCanvasSize(); initParticles(); }, 250); });
 
     </script>
 </body>
